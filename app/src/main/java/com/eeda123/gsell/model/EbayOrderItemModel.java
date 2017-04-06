@@ -24,23 +24,30 @@ package com.eeda123.gsell.model;
  * Created by a13570610691 on 2017/3/22.
  */
 
-public class OrderItemModel {
+public class EbayOrderItemModel {
     private String strPlatform;
     private String strShopName;
     private String strOrderNo;
     private String strBuyerName;
+
+    public int getSalesRecordNo() {
+        return salesRecordNo;
+    }
+
+    private int salesRecordNo;
     private String strSku;
     private String strCurrencyCode;
     private double dTotal;
     private String strStatus;
     private String strCreateDate;
 
-    public OrderItemModel(String strPlatform, String strShopName, String strOrderNo,
-                          String strBuyerName, String strSku, String strCurrencyCode, double dTotal,
-                          String strStatus, String strCreateDate){
+    public EbayOrderItemModel(String strPlatform, String strShopName, String strOrderNo, int salesRecordNo,
+                              String strBuyerName, String strSku, String strCurrencyCode, double dTotal,
+                              String strStatus, String strCreateDate){
         this.strPlatform = strPlatform;
         this.strShopName = strShopName;
         this.strOrderNo = strOrderNo;
+        this.salesRecordNo = salesRecordNo;
         this.strBuyerName = strBuyerName;
         this.strSku = strSku;
         this.strCurrencyCode = strCurrencyCode;

@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2017. Truiton (http://www.truiton.com/).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ * Mohit Gupt (https://github.com/mohitgupt)
+ *
+ */
+
 package com.eeda123.gsell.model;
 
 import android.app.Activity;
@@ -8,29 +28,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eeda123.gsell.model.HomeItemModel;
-import com.eeda123.gsell.model.OrderItemModel;
 import com.truiton.bottomnavigation.R;
-
-import static com.truiton.bottomnavigation.R.id.tvNoPay;
-import static com.truiton.bottomnavigation.R.id.tvNoship;
-import static com.truiton.bottomnavigation.R.id.tvOrderCount;
 
 /**
  * Created by a13570610691 on 2017/3/22.
  */
 
-public class OrderItemArrayAdapter extends ArrayAdapter<OrderItemModel> {
+public class AmazonOrderItemArrayAdapter extends ArrayAdapter<AmazonOrderItemModel> {
     private final Activity context;
-    private final OrderItemModel[] models;
+    private final AmazonOrderItemModel[] models;
 
     static class ViewHolder {
         public TextView text;
         public ImageView image;
     }
 
-    public OrderItemArrayAdapter(Activity context, OrderItemModel[] models) {
-        super(context, R.layout.order_list_item, models);
+    public AmazonOrderItemArrayAdapter(Activity context, AmazonOrderItemModel[] models) {
+        super(context, R.layout.amazon_order_list_item, models);
         this.context = context;
         this.models = models;
     }
@@ -41,7 +55,7 @@ public class OrderItemArrayAdapter extends ArrayAdapter<OrderItemModel> {
         // reuse views
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
-            rowView = inflater.inflate(R.layout.order_list_item, null);
+            rowView = inflater.inflate(R.layout.amazon_order_list_item, null);
             // configure view holder
             ViewHolder vhPlatform = new ViewHolder();
             vhPlatform.text = (TextView) rowView.findViewById(R.id.tvPlatform);
@@ -52,7 +66,7 @@ public class OrderItemArrayAdapter extends ArrayAdapter<OrderItemModel> {
         }
 
         // fill data
-        OrderItemModel s = models[position];
+        AmazonOrderItemModel s = models[position];
 
         TextView tvPlatform = (TextView) rowView.findViewById(R.id.tvPlatform);
         tvPlatform.setText(s.getStrPlatform());
@@ -62,6 +76,9 @@ public class OrderItemArrayAdapter extends ArrayAdapter<OrderItemModel> {
 
         TextView tvOrderNo = (TextView) rowView.findViewById(R.id.tvOrderNo);
         tvOrderNo.setText(String.valueOf(s.getStrOrderNo()));
+
+        TextView tvSalesRecordNo = (TextView) rowView.findViewById(R.id.tvSalesRecordNo);
+        tvSalesRecordNo.setText(String.valueOf(s.getSalesRecordNo()));
 
         TextView tvBuyerName = (TextView) rowView.findViewById(R.id.tvBuyerName);
         tvBuyerName.setText(String.valueOf(s.getStrBuyerName()));

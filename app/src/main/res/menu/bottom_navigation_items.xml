@@ -5,9 +5,14 @@
         android:icon="@drawable/ic_account_box_black_24dp"
         android:title="@string/item_1"/>
     <item
-        android:id="@+id/action_item2"
+        android:id="@+id/action_issue"
         android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/item_2"/>
+        android:title="订单"/>
+    <item
+        android:id="@+id/action_msg"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title="站内信"/>
+
     <item
         android:id="@+id/action_item3"
         android:icon="@drawable/ic_assignment_ind_black_24dp"

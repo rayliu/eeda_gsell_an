@@ -1,6 +1,26 @@
 
 
-package com.eeda123.gsell;
+/*
+ * Copyright (c) 2017. Truiton (http://www.truiton.com/).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ * Mohit Gupt (https://github.com/mohitgupt)
+ *
+ */
+
+package com.eeda123.gsell.order;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,18 +34,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.eeda123.gsell.model.HomeEbayItemArrayAdapter;
-import com.eeda123.gsell.model.HomeItemModel;
+import com.eeda123.gsell.MainActivity;
+import com.eeda123.gsell.model.EbayOrderItemArrayAdapter;
+
+import com.eeda123.gsell.model.EbayOrderItemModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.truiton.bottomnavigation.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,24 +54,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-import static android.R.attr.data;
-import static android.R.id.list;
-import static okhttp3.Protocol.get;
-
-public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.OnRefreshListener{
-    public static final String TAG = "CallInstances";
+public class EbayOrderFragment extends ListFragment   implements SwipeRefreshLayout.OnRefreshListener{
+    public static final String TAG = "retrofit2 Call";
     private boolean isRefresh = false;//是否刷新中
     private SwipeRefreshLayout mSwipeLayout;
 
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
+    private EbayOrderItemModel[] models = new EbayOrderItemModel[0];
+    private ArrayAdapter<EbayOrderItemModel> adapter = null;
+
+    public static EbayOrderFragment newInstance() {
+        EbayOrderFragment fragment = new EbayOrderFragment();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -63,29 +81,17 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         initRefresh();
-
-        getData();
-
-        HomeItemModel[] models = new HomeItemModel[] {
-                new HomeItemModel("eBay", "shop1", 10, 12, 13),
-                new HomeItemModel("eBay", "shop1", 15, 11, 1),
-                new HomeItemModel("eBay", "shop3", 100, 10, 10),
-                new HomeItemModel("Amazon", "shop4", 10, 10, 10),
-                new HomeItemModel("Amazon", "WebOS", 10, 10, 10),
-                new HomeItemModel("Amazon", "Ubuntu", 10, 10, 10),
-                new HomeItemModel("Amazon", "Windows7", 10, 10, 10),
-                new HomeItemModel("Amazon", "Max OS X", 10, 10, 10)
-        };
-        ArrayAdapter<HomeItemModel> adapter = new HomeEbayItemArrayAdapter(getActivity(), models);
-        setListAdapter(adapter);
+        if(models.length==0)
+            getData();
     }
 
     private void getData() {
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
-
+//    http://192.168.0.108:8080/
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(MainActivity.HOST_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -107,9 +113,33 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
                 Log.d(TAG, "server contacted at: " + call.request().url());
                 HashMap<String,Object> json = response.body();
                 ArrayList<Map> recList =  (ArrayList<Map>)json.get("data");
+                models = new EbayOrderItemModel[recList.size()];
+                int index = 0;
                 for(Map<String, Object> rec: recList){
-
+                    EbayOrderItemModel model = new EbayOrderItemModel("eBay",
+                            rec.get("SELLER_USER_ID")==null?"":rec.get("SELLER_USER_ID").toString(),
+                            rec.get("ORDER_ID").toString(),
+                            rec.get("SALES_RECORD_NUMBER")==null?0:((Double) rec.get("SALES_RECORD_NUMBER")).intValue(),
+                            rec.get("BUYER_USER_ID").toString(),
+                            rec.get("SKU")==null?"":rec.get("SKU").toString(),
+                            rec.get("TOTAL_CURRENCY_ID")==null?"":rec.get("TOTAL_CURRENCY_ID").toString(),
+                            Double.valueOf(rec.get("TOTAL").toString()),
+                            rec.get("ORDER_STATUS")==null?"":rec.get("ORDER_STATUS").toString(),
+                            rec.get("CREATED_TIME").toString());
+                    models[index] = model;
+                    index++;
                 }
+
+                adapter = new EbayOrderItemArrayAdapter(getActivity(), models);
+                setListAdapter(adapter);
+
+//                if(adapter!=null){
+//                    adapter.clear();
+//                    adapter.addAll(models);
+//                }else {
+//                    adapter = new OrderItemArrayAdapter(getActivity(), models);
+//                    setListAdapter(adapter);
+//                }
             }
             @Override
             public void onFailure(Call<HashMap<String,Object>> call, Throwable t) {
@@ -120,7 +150,7 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
     }
 
     public interface EedaService {
-        @GET("app/{type}/allOrderList")
+        @GET("app/{type}/ebayOrderList")
         Call<HashMap<String,Object>> list(@Path("type") String type);
     }
 
@@ -144,8 +174,6 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
         mSwipeLayout.setOnRefreshListener(this);
     }
 
-
-
     /*
      * 监听器SwipeRefreshLayout.OnRefreshListener中的方法，当下拉刷新后触发
      */
@@ -154,6 +182,8 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
         //检查是否处于刷新状态
         if (!isRefresh) {
             isRefresh = true;
+            //加载网络数据
+            getData();
             //模拟加载网络数据，这里设置4秒，正好能看到4色进度条
             new Handler().postDelayed(new Runnable() {
                 public void run() {

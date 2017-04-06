@@ -1,6 +1,26 @@
 
 
-package com.eeda123.gsell;
+/*
+ * Copyright (c) 2017. Truiton (http://www.truiton.com/).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ * Mohit Gupt (https://github.com/mohitgupt)
+ *
+ */
+
+package com.eeda123.gsell.order;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,10 +34,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.eeda123.gsell.model.HomeEbayItemArrayAdapter;
-import com.eeda123.gsell.model.HomeItemModel;
-import com.eeda123.gsell.model.OrderItemArrayAdapter;
-import com.eeda123.gsell.model.OrderItemModel;
+import com.eeda123.gsell.MainActivity;
+import com.eeda123.gsell.model.AmazonOrderItemArrayAdapter;
+import com.eeda123.gsell.model.AmazonOrderItemModel;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.truiton.bottomnavigation.R;
@@ -34,16 +54,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-public class ItemTwoFragment extends ListFragment   implements SwipeRefreshLayout.OnRefreshListener{
+public class AmazonOrderFragment extends ListFragment   implements SwipeRefreshLayout.OnRefreshListener{
     public static final String TAG = "retrofit2 Call";
     private boolean isRefresh = false;//是否刷新中
     private SwipeRefreshLayout mSwipeLayout;
 
-    private OrderItemModel[] models = new OrderItemModel[0];
-    private ArrayAdapter<OrderItemModel> adapter = null;
+    private AmazonOrderItemModel[] models = new AmazonOrderItemModel[0];
+    private ArrayAdapter<AmazonOrderItemModel> adapter = null;
 
-    public static ItemTwoFragment newInstance() {
-        ItemTwoFragment fragment = new ItemTwoFragment();
+    public static AmazonOrderFragment newInstance() {
+        AmazonOrderFragment fragment = new AmazonOrderFragment();
         return fragment;
     }
 
@@ -71,15 +91,15 @@ public class ItemTwoFragment extends ListFragment   implements SwipeRefreshLayou
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
-
+//    http://192.168.0.108:8080/
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.108:8080/")
+                .baseUrl(MainActivity.HOST_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         EedaService service = retrofit.create(EedaService.class);
 
-        Call<HashMap<String, Object>> call = service.list("allOrder");
+        Call<HashMap<String, Object>> call = service.list();
 
         call.enqueue(eedaCallback());
     }
@@ -93,23 +113,33 @@ public class ItemTwoFragment extends ListFragment   implements SwipeRefreshLayou
                 Log.d(TAG, "server contacted at: " + call.request().url());
                 HashMap<String,Object> json = response.body();
                 ArrayList<Map> recList =  (ArrayList<Map>)json.get("data");
-                OrderItemModel[] models = new OrderItemModel[recList.size()];
+                models = new AmazonOrderItemModel[recList.size()];
                 int index = 0;
                 for(Map<String, Object> rec: recList){
-                    OrderItemModel model = new OrderItemModel("eBay",
-                            rec.get("SELLER_USER_ID")==null?"":rec.get("SELLER_USER_ID").toString(),
-                            rec.get("ORDER_ID").toString(),
-                            rec.get("BUYER_USER_ID").toString(),
-                            rec.get("SKU")==null?"":rec.get("SKU").toString(),
-                            rec.get("TOTAL_CURRENCY_ID")==null?"":rec.get("TOTAL_CURRENCY_ID").toString(),
-                            Double.valueOf(rec.get("TOTAL").toString()),
+                    AmazonOrderItemModel model = new AmazonOrderItemModel("amazon",
+                            "",//rec.get("SELLER_USER_ID")==null?"":rec.get("SELLER_USER_ID").toString(),
+                            rec.get("AMAZON_ORDER_ID").toString(),
+                            0,//rec.get("SALES_RECORD_NUMBER")==null?0:((Double) rec.get("SALES_RECORD_NUMBER")).intValue(),
+                            rec.get("BUYER_NAME")==null?"":rec.get("BUYER_NAME").toString(),
+                            "",//rec.get("SKU")==null?"":rec.get("SKU").toString(),
+                            rec.get("ORDER_CURRENCY_CODE")==null?"":rec.get("ORDER_CURRENCY_CODE").toString(),
+                            rec.get("TOTAL_AMOUNT")==null?0:Double.valueOf(rec.get("TOTAL_AMOUNT").toString()),
                             rec.get("ORDER_STATUS")==null?"":rec.get("ORDER_STATUS").toString(),
-                            rec.get("CREATED_TIME").toString());
+                            rec.get("PURCHASE_DATE").toString());
                     models[index] = model;
                     index++;
                 }
-                adapter = new OrderItemArrayAdapter(getActivity(), models);
+
+                adapter = new AmazonOrderItemArrayAdapter(getActivity(), models);
                 setListAdapter(adapter);
+
+//                if(adapter!=null){
+//                    adapter.clear();
+//                    adapter.addAll(models);
+//                }else {
+//                    adapter = new OrderItemArrayAdapter(getActivity(), models);
+//                    setListAdapter(adapter);
+//                }
             }
             @Override
             public void onFailure(Call<HashMap<String,Object>> call, Throwable t) {
@@ -120,8 +150,8 @@ public class ItemTwoFragment extends ListFragment   implements SwipeRefreshLayou
     }
 
     public interface EedaService {
-        @GET("app/{type}/list")
-        Call<HashMap<String,Object>> list(@Path("type") String type);
+        @GET("app/order/amazonOrderList")
+        Call<HashMap<String,Object>> list();
     }
 
     private void initRefresh() {
@@ -152,6 +182,8 @@ public class ItemTwoFragment extends ListFragment   implements SwipeRefreshLayou
         //检查是否处于刷新状态
         if (!isRefresh) {
             isRefresh = true;
+            //加载网络数据
+            getData();
             //模拟加载网络数据，这里设置4秒，正好能看到4色进度条
             new Handler().postDelayed(new Runnable() {
                 public void run() {
