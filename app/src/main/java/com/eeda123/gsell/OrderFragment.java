@@ -23,16 +23,23 @@ package com.eeda123.gsell;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eeda123.gsell.order.AliexpressOrderFragment;
 import com.eeda123.gsell.order.AmazonOrderFragment;
 import com.eeda123.gsell.order.EbayOrderFragment;
 import com.truiton.bottomnavigation.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.R.attr.fragment;
 
@@ -72,19 +79,48 @@ public class OrderFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_order, container, false);
     }
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Create an adapter that when requested, will return a fragment representing an object in
         // the collection.
         //
         // ViewPager and its adapters use support library fragments, so we must use
         // getSupportFragmentManager.
+
+        //FragmentPagerAdapter getItem is not being triggered
+//    http://stackoverflow.com/questions/15588120/fragmentpageradapter-getitem-is-not-being-triggered
+
         mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getActivity().getSupportFragmentManager());
 
         // Set up the ViewPager, attaching the adapter.
         mViewPager = (ViewPager) getActivity().findViewById(R.id.issue_pager);
         mViewPager.setAdapter(mDemoCollectionPagerAdapter);
-
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.d("onPageScrolled", "position: " + position);
+//                Fragment fragment = mDemoCollectionPagerAdapter.getItem(position);
+//                Log.d("onPageScrolled", "fragment: " + fragment.getArguments());
+//                fragment.onCreate(savedInstanceState);
+//                fragment.onStart();
+                //mDemoCollectionPagerAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("onPageSelected", "position: " + position);
+//                Fragment fragment = mDemoCollectionPagerAdapter.getItem(position);
+//                fragment.onCreate(savedInstanceState);
+////                fragment.onStart();
+//                Log.d("onPageSelected", "fragment: " + fragment.getArguments());
+//                if(position==1)
+                    mDemoCollectionPagerAdapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                Log.d("onStateChanged", "state: " + state);
+                Log.d("onStateChanged", "getCurrentItem: " + mViewPager.getCurrentItem());
+            }
+        });
     }
     /*
     public void onCreate(Bundle savedInstanceState) {
@@ -139,30 +175,29 @@ public class OrderFragment extends Fragment {
     /**
      * A {@link android.support.v4.app.FragmentStatePagerAdapter} that returns a fragment
      * representing an object in the collection.
+     *
+     * FragmentStatePagerAdapter  会丢fragment（）,   而FragmentPagerAdapter却不会。
      */
-    public static class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter {
+    public static class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter
+
+    {
+        List<Fragment> fragmentList;
 
         public DemoCollectionPagerAdapter(FragmentManager fm) {
             super(fm);
+            fragmentList = new ArrayList<Fragment>(3);
+            fragmentList.add(new EbayOrderFragment());
+            fragmentList.add(new AmazonOrderFragment());
+            fragmentList.add(new AliexpressOrderFragment());
         }
 
         @Override
         public Fragment getItem(int i) {
-            Fragment fragment = new EbayOrderFragment();
-            switch (i){
-                case 0:
-                    fragment = new EbayOrderFragment();
-                    break;
-                case 1:
-                    fragment = new AmazonOrderFragment();
-                    break;
-                case 2:
-                    fragment = new EbayOrderFragment();
-                    break;
-            }
+            Log.d("getItem", "index: " + i);
+            Fragment fragment = fragmentList.get(i);
 
             Bundle args = new Bundle();
-            args.putInt("object", i + 1); // Our object is just an integer :-P
+            args.putInt("num", i); // Our object is just an integer :-P
             fragment.setArguments(args);
             return fragment;
         }
@@ -189,23 +224,12 @@ public class OrderFragment extends Fragment {
             }
             return title;
         }
-    }
-
-    /**
-     * A dummy fragment representing a section of the app, but that simply displays dummy text.
-     */
-    public static class DemoObjectFragment extends Fragment {
-
-        public static final String ARG_OBJECT = "object";
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_collection_object, container, false);
-            Bundle args = getArguments();
-            ((TextView) rootView.findViewById(android.R.id.text1)).setText(
-                    Integer.toString(args.getInt(ARG_OBJECT)));
-            return rootView;
+        public int getItemPosition(Object object){
+            return PagerAdapter.POSITION_NONE;
         }
     }
+
+
 }

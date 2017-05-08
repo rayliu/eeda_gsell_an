@@ -29,32 +29,40 @@ public class AmazonOrderItemModel {
     private String strShopName;
     private String strOrderNo;
     private String strBuyerName;
-
-    public int getSalesRecordNo() {
-        return salesRecordNo;
-    }
-
-    private int salesRecordNo;
-    private String strSku;
+    private String strSku;//sku + amount
     private String strCurrencyCode;
     private double dTotal;
+
+    public String getStrDeliveryMethod() {
+        return strDeliveryMethod;
+    }
+
+    public String getStrMarketPlace() {
+        return strMarketPlace;
+    }
+
+    private String strDeliveryMethod;
+    private String strMarketPlace;
     private String strStatus;
     private String strCreateDate;
 
-    public AmazonOrderItemModel(String strPlatform, String strShopName, String strOrderNo, int salesRecordNo,
-                                String strBuyerName, String strSku, String strCurrencyCode, double dTotal,
+    public AmazonOrderItemModel(String strPlatform, String strShopName, String strOrderNo,
+                                String strBuyerName, String strSku,
+                                String strCurrencyCode, double dTotal, String strDeliveryMethod, String strMarketPlace,
                                 String strStatus, String strCreateDate){
         this.strPlatform = strPlatform;
         this.strShopName = strShopName;
         this.strOrderNo = strOrderNo;
-        this.salesRecordNo = salesRecordNo;
         this.strBuyerName = strBuyerName;
         this.strSku = strSku;
         this.strCurrencyCode = strCurrencyCode;
         this.dTotal = dTotal;
+        this.strDeliveryMethod = strDeliveryMethod;
+        this.strMarketPlace = strMarketPlace;
         this.strStatus = strStatus;
         this.strCreateDate = strCreateDate;
     }
+
 
     public String getStrCurrencyCode() {
         return strCurrencyCode;

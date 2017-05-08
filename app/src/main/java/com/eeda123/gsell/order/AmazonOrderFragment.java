@@ -75,6 +75,7 @@ public class AmazonOrderFragment extends ListFragment   implements SwipeRefreshL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle args = getArguments();
         return inflater.inflate(R.layout.fragment_item_one, container, false);
     }
 
@@ -119,11 +120,12 @@ public class AmazonOrderFragment extends ListFragment   implements SwipeRefreshL
                     AmazonOrderItemModel model = new AmazonOrderItemModel("amazon",
                             "",//rec.get("SELLER_USER_ID")==null?"":rec.get("SELLER_USER_ID").toString(),
                             rec.get("AMAZON_ORDER_ID").toString(),
-                            0,//rec.get("SALES_RECORD_NUMBER")==null?0:((Double) rec.get("SALES_RECORD_NUMBER")).intValue(),
                             rec.get("BUYER_NAME")==null?"":rec.get("BUYER_NAME").toString(),
-                            "",//rec.get("SKU")==null?"":rec.get("SKU").toString(),
+                            rec.get("SKU")==null?"":rec.get("SKU").toString(),
                             rec.get("ORDER_CURRENCY_CODE")==null?"":rec.get("ORDER_CURRENCY_CODE").toString(),
                             rec.get("TOTAL_AMOUNT")==null?0:Double.valueOf(rec.get("TOTAL_AMOUNT").toString()),
+                            rec.get("FULFILLMENT_CHANNEL")==null?"":rec.get("FULFILLMENT_CHANNEL").toString(),
+                            "",
                             rec.get("ORDER_STATUS")==null?"":rec.get("ORDER_STATUS").toString(),
                             rec.get("PURCHASE_DATE").toString());
                     models[index] = model;

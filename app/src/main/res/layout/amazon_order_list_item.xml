@@ -160,13 +160,12 @@
 
                     <TextView
                         android:id="@+id/tvSku"
-                        android:layout_width="wrap_content"
+                        android:layout_width="297dp"
                         android:layout_height="wrap_content"
                         android:paddingLeft="5dip"
-                        android:text="ZSDVK-08EA00-2317A4-PEU"
+                        android:text="ZSDVK-08EA00-2317A4-PEU      数量:5"
                         android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -180,18 +179,45 @@
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="记录号" />
+                        android:text="发货方式" />
 
                     <TextView
-                        android:id="@+id/tvSalesRecordNo"
+                        android:id="@+id/tvDeliveryMethod"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.93"
                         android:paddingLeft="5dip"
-                        android:text="100"
+                        android:text="FBA"
                         android:textColor="@android:color/black"
                         android:textSize="14sp"
                         android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.10"
+                        android:text="站点"
+                        android:textAlignment="viewStart" />
+
+                    <TextView
+                        android:id="@+id/tvMarketPlace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.93"
+                        android:paddingLeft="5dip"
+                        android:text="DE"
+                        android:textColor="@android:color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
                 </LinearLayout>
 
             </LinearLayout>

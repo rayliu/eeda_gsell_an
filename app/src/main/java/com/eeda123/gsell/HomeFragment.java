@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.eeda123.gsell.model.HomeEbayItemArrayAdapter;
 import com.eeda123.gsell.model.HomeItemModel;
@@ -115,6 +116,8 @@ public class HomeFragment extends ListFragment  implements SwipeRefreshLayout.On
             public void onFailure(Call<HashMap<String,Object>> call, Throwable t) {
                 // the network call was a failure
                 Log.d(TAG, "call failed against the url: " + call.request().url());
+                Toast.makeText(getActivity().getBaseContext(), "网络连接失败", Toast.LENGTH_LONG).show();
+
             }
         };
     }

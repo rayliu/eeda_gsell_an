@@ -75,6 +75,7 @@ public class EbayOrderFragment extends ListFragment   implements SwipeRefreshLay
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle args = getArguments();
         return inflater.inflate(R.layout.fragment_item_one, container, false);
     }
 

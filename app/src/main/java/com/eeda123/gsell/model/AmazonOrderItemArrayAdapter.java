@@ -30,6 +30,9 @@ import android.widget.TextView;
 
 import com.truiton.bottomnavigation.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by a13570610691 on 2017/3/22.
  */
@@ -39,8 +42,21 @@ public class AmazonOrderItemArrayAdapter extends ArrayAdapter<AmazonOrderItemMod
     private final AmazonOrderItemModel[] models;
 
     static class ViewHolder {
-        public TextView text;
-        public ImageView image;
+        @BindView(R.id.tvPlatform) TextView tvPlatform;
+        @BindView(R.id.tvShopName) TextView tvShopName;
+        @BindView(R.id.tvOrderNo) TextView tvOrderNo;
+        @BindView(R.id.tvBuyerName) TextView tvBuyerName;
+        @BindView(R.id.tvCurCode) TextView tvCurCode;
+        @BindView(R.id.tvAmount) TextView tvAmount;
+        @BindView(R.id.tvSku) TextView tvSku;
+        @BindView(R.id.tvDeliveryMethod) TextView tvDeliveryMethod;
+        @BindView(R.id.tvMarketPlace) TextView tvMarketPlace;
+        @BindView(R.id.tvStatus) TextView tvStatus;
+        @BindView(R.id.tvCreateTime) TextView tvCreateTime;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public AmazonOrderItemArrayAdapter(Activity context, AmazonOrderItemModel[] models) {
@@ -52,48 +68,40 @@ public class AmazonOrderItemArrayAdapter extends ArrayAdapter<AmazonOrderItemMod
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
+        ViewHolder viewHolder=null;
         // reuse views
         if (rowView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             rowView = inflater.inflate(R.layout.amazon_order_list_item, null);
             // configure view holder
-            ViewHolder vhPlatform = new ViewHolder();
-            vhPlatform.text = (TextView) rowView.findViewById(R.id.tvPlatform);
-            ViewHolder vhShopName = new ViewHolder();
-            vhShopName.text = (TextView) rowView.findViewById(R.id.tvShopName);
-
-            //rowView.setTag(viewHolder);
+            viewHolder = new ViewHolder(rowView);
+            rowView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
         // fill data
         AmazonOrderItemModel s = models[position];
+        if (null != s) {
+            viewHolder.tvPlatform.setText(s.getStrPlatform());
+            viewHolder.tvShopName.setText(s.getStrShopName());
+            viewHolder.tvOrderNo.setText(s.getStrOrderNo());
+            viewHolder.tvBuyerName.setText(s.getStrBuyerName());
+            viewHolder.tvCurCode.setText(s.getStrCurrencyCode());
+            viewHolder.tvAmount.setText(String.valueOf(s.getdTotal()));
+            viewHolder.tvSku.setText(s.getStrSku());
+            String dm = "自派送";
+            if(s.getStrDeliveryMethod().equals("AFN")){
+                dm = "FBA";
+            }
+            viewHolder.tvDeliveryMethod.setText(dm);
+            viewHolder.tvMarketPlace.setText(s.getStrMarketPlace());
 
-        TextView tvPlatform = (TextView) rowView.findViewById(R.id.tvPlatform);
-        tvPlatform.setText(s.getStrPlatform());
+            viewHolder.tvStatus.setText(s.getStrStatus());
+            viewHolder.tvCreateTime.setText(s.getStrCreateDate());
+        }
 
-        TextView tvShopName = (TextView) rowView.findViewById(R.id.tvShopName);
-        tvShopName.setText(s.getStrShopName());
 
-        TextView tvOrderNo = (TextView) rowView.findViewById(R.id.tvOrderNo);
-        tvOrderNo.setText(String.valueOf(s.getStrOrderNo()));
-
-        TextView tvSalesRecordNo = (TextView) rowView.findViewById(R.id.tvSalesRecordNo);
-        tvSalesRecordNo.setText(String.valueOf(s.getSalesRecordNo()));
-
-        TextView tvBuyerName = (TextView) rowView.findViewById(R.id.tvBuyerName);
-        tvBuyerName.setText(String.valueOf(s.getStrBuyerName()));
-
-        TextView tvSku = (TextView) rowView.findViewById(R.id.tvSku);
-        tvSku.setText(String.valueOf(s.getStrSku()));
-
-        TextView tvCurCode = (TextView) rowView.findViewById(R.id.tvCurCode);
-        tvCurCode.setText(String.valueOf(s.getStrCurrencyCode()));
-        TextView tvAmount = (TextView) rowView.findViewById(R.id.tvAmount);
-        tvAmount.setText(String.valueOf(s.getdTotal()));
-        TextView tvStatus = (TextView) rowView.findViewById(R.id.tvStatus);
-        tvStatus.setText(String.valueOf(s.getStrStatus()));
-        TextView tvCreateTime = (TextView) rowView.findViewById(R.id.tvCreateTime);
-        tvCreateTime.setText(String.valueOf(s.getStrCreateDate()));
         return rowView;
     }
 }
